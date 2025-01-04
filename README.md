@@ -15,7 +15,12 @@ This is a web app designed to help students get answers faster from the universi
 
 ## Contributing:
 
+>_**NOTE!!**_ Use **WSL**, nothing else!! 🚀
+
 1. Clone the repo.
+    1. Make the virual enviroment using `python3 -m venv venv`.
+    2. Run `source venv/bin/activate`.
+    3. Then run `pip install -r requirements.txt`.
 2. Make a branch with your name using `git checkout -b ＜new-branch-name＞`.
 3. Write your code.
 4. Add all the files that are modified using `git add <path-to-file>`.
@@ -38,4 +43,17 @@ git merge upstream/main
 10. You may have some new changes in your project now, push them on your fork.
 ```bash
 git push origin <your-branch>
+```
+
+
+## How to run the app:
+
+Set up those enviromen variables:
+```bash
+export FLASK_APP=project
+export FLASK_DEBUG=1
+```
+And then run
+```bash
+flask run
 ```
