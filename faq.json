@@ -1,0 +1,108 @@
+{
+    "faq": [
+        {
+            "question": "How do I create a new account?",
+            "answer": "Go to the university portal and click on 'Sign Up'. Fill in your personal details and submit the form."
+        },
+        {
+            "question": "How do I log in to my account?",
+            "answer": "Visit the login page and enter your username and password."
+        },
+        {
+            "question": "I forgot my password. How can I reset it?",
+            "answer": "Click on 'Forgot Password' on the login page and follow the instructions to reset your password."
+        },
+        {
+            "question": "Where can I check my grades?",
+            "answer": "Log in to your account and navigate to the 'Grades' section."
+        },
+        {
+            "question": "How can I register for courses?",
+            "answer": "Go to the 'Course Registration' section under the student dashboard and select your preferred courses."
+        },
+        {
+            "question": "How do I drop a course?",
+            "answer": "In the 'Course Registration' section, select the course you wish to drop and confirm the action."
+        },
+        {
+            "question": "How do I update my personal information?",
+            "answer": "Log in and go to the 'Profile' section to update your details."
+        },
+        {
+            "question": "Where can I view my class schedule?",
+            "answer": "Navigate to the 'Class Schedule' tab on your dashboard."
+        },
+        {
+            "question": "How do I pay my tuition fees?",
+            "answer": "Go to the 'Payments' section and select the 'Pay Fees' option. Follow the instructions to complete the payment."
+        },
+        {
+            "question": "Can I download my transcript?",
+            "answer": "Yes, go to the 'Transcripts' section and click on 'Download'."
+        },
+        {
+            "question": "Where can I find the academic calendar?",
+            "answer": "The academic calendar is available under the 'Resources' section."
+        },
+        {
+            "question": "How do I contact my professor?",
+            "answer": "You can find contact details in the 'Faculty Directory' or message them through the portal."
+        },
+        {
+            "question": "How do I submit assignments?",
+            "answer": "Go to the 'Assignments' tab, upload your file, and click 'Submit'."
+        },
+        {
+            "question": "Where can I access library resources?",
+            "answer": "The 'Library' section on the portal provides access to all resources."
+        },
+        {
+            "question": "How do I apply for graduation?",
+            "answer": "Navigate to 'Graduation Application' in your profile settings and submit the form."
+        },
+        {
+            "question": "What should I do if I face technical issues?",
+            "answer": "Contact technical support via the 'Help Desk' link in the portal."
+        },
+        {
+            "question": "How do I view announcements?",
+            "answer": "Announcements are listed in the 'Dashboard' section of the portal."
+        },
+        {
+            "question": "Can I request a leave of absence?",
+            "answer": "Yes, go to 'Student Services' and submit a leave request form."
+        },
+        {
+            "question": "Where can I find course materials?",
+            "answer": "Course materials are available in the 'Course Content' section for each course."
+        },
+        {
+            "question": "How do I join online classes?",
+            "answer": "Log in and click on the 'Join Class' link under the class schedule."
+        },
+        {
+            "question": "How do I update my emergency contact details?",
+            "answer": "Go to 'Profile Settings' and update the emergency contact information."
+        },
+        {
+            "question": "Where can I find exam schedules?",
+            "answer": "Exam schedules are listed under the 'Exams' section in the portal."
+        },
+        {
+            "question": "How do I request a recommendation letter?",
+            "answer": "Submit a request through the 'Requests' section under student services."
+        },
+        {
+            "question": "How can I apply for scholarships?",
+            "answer": "Check the 'Scholarships' section and follow the application instructions."
+        },
+        {
+            "question": "Where can I find internship opportunities?",
+            "answer": "Internship postings are listed under the 'Career Services' tab."
+        },
+        {
+            "question": "Can I buy food at school?",
+            "answer": "Yes, from the mini shops in campus"
+        }
+    ]
+}
