@@ -1,21 +1,10 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
 {% block content %}
-<h1>{% block title %} Welcome to FlaskBlog {% endblock %}</h1>
-<h1>Login</h1>
-<form action="">
-    <label for="first">Username:</label>
-    <input type="text" id="first" name="first" placeholder="Enter your Username" required>
-
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" placeholder="Enter your Password" required>
-
-    <div class="wrap">
-        <button type="submit">
-            Submit
-        </button>
-    </div>
-
-    <label for="rememberMe">Remember me</label>
-    <input type="checkbox" id="rememberMe" name="rememberMe" required>
-</form>
+<h1 class="title">
+  Flask Login Example
+</h1>
+<h2 class="subtitle">
+  Easy authentication and authorization in Flask.
+</h2>
 {% endblock %}
