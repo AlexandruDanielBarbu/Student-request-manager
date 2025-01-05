@@ -1,10 +1,11 @@
-from flask import Flask, render_template, url_for, redirect
+from flask import Flask, render_template, url_for, redirect, request, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt
+import json
 
 app = Flask(__name__)
 
@@ -45,6 +46,14 @@ class Student(db.Model):
 
     # Relationship to User
     user = db.relationship('User', back_populates='student')
+
+    def enroll_in_course(self, course_name, teacher_name):
+        # Add a new course to the list of courses
+        course_entry = f"{course_name} - {teacher_name}"
+        courses_list = json.loads(self.courses) if self.courses else []
+        if course_entry not in courses_list:
+            courses_list.append(course_entry)
+        self.courses = json.dumps(courses_list)
 
 
 class RegisterForm(FlaskForm):
@@ -161,6 +170,31 @@ def view_student(student_id):
     # student = Student.query.get_or_404(student_id)
     # return render_template('student_profile.html', student=student)
 
+
+@app.route('/enroll', methods=['POST'])
+@login_required
+def enroll_course():
+    if current_user.role != 'student':
+        return redirect(url_for('home'))
+
+    course_name = request.form.get('course_name')
+    teacher_name = request.form.get('teacher_name')
+
+    if not course_name or not teacher_name:
+        flash("Course name and teacher name are required!")
+        return redirect(url_for('dashboard'))
+
+    # Access the current student's data
+    student = current_user.student
+
+    # Enroll in the course
+    student.enroll_in_course(course_name, teacher_name)
+
+    # Save changes to the database
+    db.session.commit()
+    flash(f"Enrolled in {course_name} taught by {teacher_name}!")
+
+    return redirect(url_for('dashboard'))
 
 if __name__ == '__main__':
     with app.app_context():
