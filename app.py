@@ -30,6 +30,19 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(80), nullable=False)
     role = db.Column(db.String(20), nullable=False)
 
+class Student(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    address = db.Column(db.String(200), nullable=False)
+    courses = db.Column(db.Text, nullable=True) # Store as JSON or comma-separated values
+    grades = db.Column(db.Text, nullable=True)  # Store as JSON or other formats
+    group = db.Column(db.Text, nullable=True)   # Student group. 311CA 322CC 432CB
+
+    # Relationship to User
+    user = db.relationship('User', backref=db.backref('student', uselist=False))
+
+
 class RegisterForm(FlaskForm):
     username = StringField(validators=[
                            InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Username"})
@@ -39,6 +52,13 @@ class RegisterForm(FlaskForm):
 
     role = SelectField('Role', choices=[('admin', 'Admin'), ('employee', 'Employee'), ('student', 'Student')],
                        validators=[InputRequired()], render_kw={"placeholder": "Role"})
+
+
+    # Student-specific fields
+    name = StringField(validators=[Length(max=100)], render_kw={"placeholder": "Full Name"})
+    address = StringField(validators=[Length(max=200)], render_kw={"placeholder": "Address"})
+    group = StringField(validators=[Length(max=7)], render_kw={"placeholder": "324CC"})
+
 
     submit = SubmitField('Register')
 
@@ -99,13 +119,35 @@ def register():
 
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data)
+
+        # Create a User entry
         new_user = User(username=form.username.data, password=hashed_password, role=form.role.data)
         db.session.add(new_user)
         db.session.commit()
+
+        # If the role is 'student', create a Student entry
+        if form.role.data == 'student':
+            # Create a new student
+            new_student = Student(
+                user_id=new_user.id,
+                name=form.name.data,
+                address=form.address.data,
+                group=form.group.data
+            )
+
+            # Add the new student
+            db.session.add(new_student)
+            db.session.commit()
+
         return redirect(url_for('login'))
 
     return render_template('register.html', form=form)
 
+@app.route('/student/<int:student_id>')
+@login_required
+def view_student(student_id):
+    student = Student.query.get_or_404(student_id)
+    return render_template('student_profile.html', student=student)
 
 
 if __name__ == '__main__':
