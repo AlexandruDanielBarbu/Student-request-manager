@@ -55,6 +55,12 @@ class Student(db.Model):
             courses_list.append(course_entry)
         self.courses = json.dumps(courses_list)
 
+    def grade_student(self, course_name, teacher_name, course_grade):
+        entry = f"{course_name} - {teacher_name} - Grade: {course_grade}"
+        grades_list = json.loads(self.grades) if self.grades else []
+        if entry not in grades_list:
+            grades_list.append(entry)
+        self.grades = json.dumps(grades_list)
 
 class RegisterForm(FlaskForm):
     username = StringField(validators=[
@@ -107,7 +113,10 @@ def login():
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data):
                 login_user(user)
-                return redirect(url_for('dashboard'))
+                if user.role == 'student':
+                    return redirect(url_for('dashboard'))
+                if user.role == 'employee':
+                    return redirect(url_for('employee_dashborad'))
 
     return render_template('login.html', form=form)
 
@@ -124,6 +133,11 @@ def logout():
 @login_required
 def dashboard():
     return render_template('dashboard.html')
+
+@app.route('/employee_dashborad', methods=['GET', 'POST'])
+@login_required
+def employee_dashborad():
+    return render_template('employee_dashborad.html')
 
 
 @app.route('/register', methods=['GET', 'POST'])
