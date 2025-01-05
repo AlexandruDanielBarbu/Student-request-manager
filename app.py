@@ -30,9 +30,13 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(80), nullable=False)
     role = db.Column(db.String(20), nullable=False)
 
+    # Relationship to link with the Student table
+    student = db.relationship('Student', back_populates='user', uselist=False)
+
 class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
     name = db.Column(db.String(100), nullable=False)
     address = db.Column(db.String(200), nullable=False)
     courses = db.Column(db.Text, nullable=True) # Store as JSON or comma-separated values
@@ -40,7 +44,7 @@ class Student(db.Model):
     group = db.Column(db.Text, nullable=True)   # Student group. 311CA 322CC 432CB
 
     # Relationship to User
-    user = db.relationship('User', backref=db.backref('student', uselist=False))
+    user = db.relationship('User', back_populates='student')
 
 
 class RegisterForm(FlaskForm):
@@ -132,7 +136,9 @@ def register():
                 user_id=new_user.id,
                 name=form.name.data,
                 address=form.address.data,
-                group=form.group.data
+                group=form.group.data,
+                courses="[]",   # Placeholder for courses
+                grades="[]"     # Placeholder for grades
             )
 
             # Add the new student
@@ -146,8 +152,14 @@ def register():
 @app.route('/student/<int:student_id>')
 @login_required
 def view_student(student_id):
-    student = Student.query.get_or_404(student_id)
-    return render_template('student_profile.html', student=student)
+    if current_user.role != 'student':
+        return redirect(url_for('home'))
+
+    # Access the student's data
+    student_data = current_user.student
+    return render_template('student_profile.html', student=student_data)
+    # student = Student.query.get_or_404(student_id)
+    # return render_template('student_profile.html', student=student)
 
 
 if __name__ == '__main__':
