@@ -2,7 +2,7 @@ from flask import Flask, render_template, url_for, redirect, request, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, SelectField, IntegerField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt
 import json
@@ -97,7 +97,20 @@ class LoginForm(FlaskForm):
 
     submit = SubmitField('Login')
 
+# Employee Form for Adding Courses
+class AddCourseForm(FlaskForm):
+    student_id = IntegerField(validators=[InputRequired()], render_kw={"placeholder": "Student ID"})
+    course_name = StringField(validators=[InputRequired()], render_kw={"placeholder": "Course Name"})
+    teacher_name = StringField(validators=[InputRequired()], render_kw={"placeholder": "Teacher Name"})
+    submit = SubmitField("Add Course")
 
+# Employee Form for Grading Students
+class GradeStudentForm(FlaskForm):
+    student_id = IntegerField(validators=[InputRequired()], render_kw={"placeholder": "Student ID"})
+    course_name = StringField(validators=[InputRequired()], render_kw={"placeholder": "Course Name"})
+    teacher_name = StringField(validators=[InputRequired()], render_kw={"placeholder": "Teacher Name"})
+    grade = IntegerField(validators=[InputRequired()], render_kw={"placeholder": "Grade"})
+    submit = SubmitField("Add Grade")
 
 @app.route('/')
 def home():
@@ -209,6 +222,50 @@ def enroll_course():
     flash(f"Enrolled in {course_name} taught by {teacher_name}!")
 
     return redirect(url_for('dashboard'))
+
+# Route for adding a course
+@app.route('/add_course', methods=['GET', 'POST'])
+@login_required
+def add_course():
+    if current_user.role != 'employee':
+        flash("Unauthorized access!")
+        return redirect(url_for('home'))
+
+    form = AddCourseForm()
+    if form.validate_on_submit():
+        student = Student.query.get(form.student_id.data)
+        if not student:
+            flash("Student not found!")
+            return redirect(url_for('add_course'))
+
+        student.enroll_in_course(form.course_name.data, form.teacher_name.data)
+        db.session.commit()
+        flash(f"Course {form.course_name.data} taught by {form.teacher_name.data} added to student {student.id}!")
+        return redirect(url_for('add_course'))
+
+    return render_template('add_course.html', form=form)
+
+# Route for grading a student
+@app.route('/grade_student', methods=['GET', 'POST'])
+@login_required
+def grade_student():
+    if current_user.role != 'employee':
+        flash("Unauthorized access!")
+        return redirect(url_for('home'))
+
+    form = GradeStudentForm()
+    if form.validate_on_submit():
+        student = Student.query.get(form.student_id.data)
+        if not student:
+            flash("Student not found!")
+            return redirect(url_for('grade_student'))
+
+        student.grade_student(form.course_name.data, form.teacher_name.data, form.grade.data)
+        db.session.commit()
+        flash(f"Grade {form.grade.data} added for student {student.id} in {form.course_name.data}!")
+        return redirect(url_for('grade_student'))
+
+    return render_template('grade_student.html', form=form)
 
 if __name__ == '__main__':
     with app.app_context():
