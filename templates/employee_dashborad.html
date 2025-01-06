@@ -1,18 +1,27 @@
-<h1>Hello from employee Dashboard</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Employee Dashboard</title>
+</head>
+<body>
+    <h1>Welcome, {{ username }}!</h1>
 
-<h1>Questions to answer</h1>
-<h3>Q1</h3>
-<h3>Q2</h3>
-<h3>Q3</h3>
+    <h2>Your Questions:</h2>
+    <ul>
+        {% for question in questions %}
+            <li>{{ question }}</li>
+        {% endfor %}
+    </ul>
 
-<h1>Grade student</h1>
-<a href="{{ url_for('grade_student') }}">Grade</a>
-<h3>Name</h3>
-<h3>Group</h3>
+    <h1>Grade student</h1>
+    <a href="{{ url_for('grade_student') }}">Grade</a>
+    <h3>Name</h3>
+    <h3>Group</h3>
 
 
-<h1>Enroll student in course</h1>
-<a href="{{ url_for('add_course') }}">Enrol</a>
-<h3>Name</h3>
-<h3>Group</h3>
+    <h1>Enroll student in course</h1>
+    <a href="{{ url_for('add_course') }}">Enrol</a>
+    <h3>Name</h3>
+    <h3>Group</h3>
+</body>
 

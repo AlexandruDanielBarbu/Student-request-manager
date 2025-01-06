@@ -35,6 +35,9 @@ class User(db.Model, UserMixin):
     # Relationship to link with the Student table
     student = db.relationship('Student', back_populates='user', uselist=False)
 
+    # Relationship to Employee
+    employee = db.relationship('Employee', back_populates='user', uselist=False)
+
 class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -62,6 +65,30 @@ class Student(db.Model):
         if entry not in grades_list:
             grades_list.append(entry)
         self.grades = json.dumps(grades_list)
+
+class Employee(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    # Relationship to User
+    user = db.relationship('User', back_populates='employee')
+
+    # Store questions as JSON (for flexibility)
+    questions = db.Column(db.Text, nullable=True)  # JSON format
+
+    def set_questions(self, question_list):
+        # Set the questions for the employee.
+        self.questions = json.dumps(question_list)
+
+    def get_questions(self):
+        # Get the list of questions.
+        return json.loads(self.questions) if self.questions else []
+
+    def add_question(self, question):
+        # Add a new question to the employee's list of questions
+        questions_list = self.get_questions()
+        questions_list.append(question)
+        self.set_questions(questions_list)
 
 class RegisterForm(FlaskForm):
     username = StringField(validators=[
@@ -142,16 +169,61 @@ def logout():
     return redirect(url_for('login'))
 
 
-
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
     return render_template('dashboard.html')
 
+
+@app.route('/ask_question', methods=['POST'])
+@login_required
+def ask_question():
+    if current_user.role != 'student':
+        flash("Only students can ask questions!")
+        return redirect(url_for('home'))
+
+    question = request.form.get('question')
+    if not question:
+        flash("Please provide a valid question.")
+        return redirect(url_for('dashboard'))
+
+    # Find the first employee with fewer than 5 questions
+    employees = Employee.query.all()
+    for emp in employees:
+        if emp.questions is None:  # Initialize if it's None
+            emp.questions = "[]"
+
+        if len(emp.get_questions()) < 5:
+            emp.add_question(question)
+            db.session.commit()
+            flash(f"Your question has been assigned to {emp.user.username}.")
+            return redirect(url_for('dashboard'))
+
+    flash("All employees currently have the maximum number of questions.")
+    return redirect(url_for('dashboard'))
+
 @app.route('/employee_dashborad', methods=['GET', 'POST'])
 @login_required
 def employee_dashborad():
-    return render_template('employee_dashborad.html')
+    if current_user.role != 'employee':
+        flash("You must be an employee!")
+        return redirect(url_for('home'))
+
+    # Get the username of the current user
+    username = current_user.username
+
+    employee = current_user.employee
+    # Check if the employee exists (just to be safe)
+    if not employee:
+        flash("Employee entry not found!")
+        return redirect(url_for('home'))
+
+    # Get the questions (we assume the `questions` are stored in JSON format)
+    questions = json.loads(employee.questions) if employee.questions else []
+
+    return render_template('employee_dashborad.html', username=username, questions=questions)
+
+    return render_template('', employee=employee, )
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -180,6 +252,16 @@ def register():
 
             # Add the new student
             db.session.add(new_student)
+            db.session.commit()
+
+        # If the role is 'employee', create an Employee entry
+        elif form.role.data == 'employee':
+            # Create a new employee
+            new_employee = Employee(
+                user_id=new_user.id,
+                questions="[]"  # Initialize with an empty list for questions
+            )
+            db.session.add(new_employee)
             db.session.commit()
 
         return redirect(url_for('login'))
