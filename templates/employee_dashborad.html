@@ -13,6 +13,17 @@
         {% endfor %}
     </ul>
 
+    <h3>Answer Question</h3>
+    <form action="{{ url_for('answer_question') }}" method="POST">
+        <label for="recipient_id">Recipient (Student ID):</label>
+        <input type="text" name="recipient_id" required>
+
+        <label for="answer">Your Answer:</label>
+        <textarea name="answer" required></textarea>
+
+        <button type="submit">Send Answer</button>
+    </form>
+
     <h1>Grade student</h1>
     <a href="{{ url_for('grade_student') }}">Grade</a>
     <h3>Name</h3>
