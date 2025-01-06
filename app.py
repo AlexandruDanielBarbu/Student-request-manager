@@ -158,6 +158,9 @@ def login():
                     return redirect(url_for('dashboard'))
                 if user.role == 'employee':
                     return redirect(url_for('employee_dashborad'))
+                if user.role == 'admin':
+                    return redirect(url_for('admin_dashboard'))
+
 
     return render_template('login.html', form=form)
 
@@ -223,8 +226,42 @@ def employee_dashborad():
 
     return render_template('employee_dashborad.html', username=username, questions=questions)
 
-    return render_template('', employee=employee, )
+@app.route('/admin_dashboard', methods=['GET', 'POST'])
+@login_required
+def admin_dashboard():
+    if current_user.role != 'admin':
+        flash("You must be an admin!")
+        return redirect(url_for('home'))
 
+    # Get all non-admin users (students and employees)
+    users_to_delete = User.query.filter(User.role != 'admin').all()
+
+    if request.method == 'POST':
+        user_id_to_delete = request.form['user_id_to_delete']
+
+        # Find the user by id
+        user_to_delete = User.query.get(user_id_to_delete)
+
+        if user_to_delete:
+            if user_to_delete.role == 'student':
+                student = Student.query.filter_by(user_id=user_to_delete.id).first()
+                if student:
+                    db.session.delete(student)  # Delete the student's data
+            elif user_to_delete.role == 'employee':
+                employee = Employee.query.filter_by(user_id=user_to_delete.id).first()
+                if employee:
+                    db.session.delete(employee)  # Delete the employee's data
+
+            # Delete the user from the User table
+            db.session.delete(user_to_delete)
+            db.session.commit()
+
+            flash(f'{user_to_delete.role.capitalize()} deleted successfully!')
+
+        else:
+            flash("User not found!")
+
+    return render_template('admin_dashboard.html', users=users_to_delete)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
