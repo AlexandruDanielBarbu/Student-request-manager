@@ -1,18 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grade Student</title>
+    <!-- Link to Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEJ4tR5zx3H3T8XxL1DhpUw5y8WyXwDgwleSgWV6L6EY/J1bbFWZzMkLti0Wj" crossorigin="anonymous">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .card {
+            margin-top: 30px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            background-color: white;
+        }
+
+        h1 {
+            color: #007bff;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        .back-link {
+            margin-top: 20px;
+            display: inline-block;
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Grade Student</h1>
-    <form method="POST">
-        {{ form.hidden_tag() }}
-        {{ form.student_id.label }} {{ form.student_id }}
-        {{ form.course_name.label }} {{ form.course_name }}
-        {{ form.teacher_name.label }} {{ form.teacher_name }}
-        {{ form.grade.label }} {{ form.grade }}
-        {{ form.submit }}
-    </form>
-    <a href="{{ url_for('home') }}">Back to Home</a>
+
+    <div class="container mt-5">
+        <div class="card">
+            <h1>Grade Student</h1>
+
+            <!-- Success/Error Messages -->
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="alert alert-info" role="alert">
+                        {{ messages[0] }}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{ form.student_id.label(class="form-label") }}
+                    {{ form.student_id(class="form-control") }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.course_name.label(class="form-label") }}
+                    {{ form.course_name(class="form-control") }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.teacher_name.label(class="form-label") }}
+                    {{ form.teacher_name(class="form-control") }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.grade.label(class="form-label") }}
+                    {{ form.grade(class="form-control") }}
+                </div>
+
+                <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
+            </form>
+
+            <a href="{{ url_for('home') }}" class="btn btn-link back-link">Back to Home</a>
+        </div>
+    </div>
+
+    <!-- Link to Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pzjw8f+ua7Kw1TIq0v8FqShABrnCv4PnP7t2F6zpgi9pmW3tyQ0f6Hlh7B2nD59B" crossorigin="anonymous"></script>
 </body>
 </html>
