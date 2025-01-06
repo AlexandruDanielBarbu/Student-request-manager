@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Add Course</title>
+</head>
+<body>
+    <h1>Add Course for Student</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.student_id.label }} {{ form.student_id }}
+        {{ form.course_name.label }} {{ form.course_name }}
+        {{ form.teacher_name.label }} {{ form.teacher_name }}
+        {{ form.submit }}
+    </form>
+    <a href="{{ url_for('home') }}">Back to Home</a>
+</body>
+</html>
