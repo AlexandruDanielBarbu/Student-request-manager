@@ -84,10 +84,10 @@ class Employee(db.Model):
         # Get the list of questions.
         return json.loads(self.questions) if self.questions else []
 
-    def add_question(self, question):
-        # Add a new question to the employee's list of questions
-        questions_list = self.get_questions()
-        questions_list.append(question)
+    def add_question(self, question_text, student_id):
+        question_entry = f"{question_text} - {student_id}"
+        questions_list = json.loads(self.questions) if self.questions else []
+        questions_list.append(question_entry)
         self.set_questions(questions_list)
 
 class RegisterForm(FlaskForm):
@@ -186,6 +186,8 @@ def ask_question():
         return redirect(url_for('home'))
 
     question = request.form.get('question')
+    student_id = current_user.id
+
     if not question:
         flash("Please provide a valid question.")
         return redirect(url_for('dashboard'))
@@ -197,13 +199,39 @@ def ask_question():
             emp.questions = "[]"
 
         if len(emp.get_questions()) < 5:
-            emp.add_question(question)
+            emp.add_question(question, student_id)
             db.session.commit()
             flash(f"Your question has been assigned to {emp.user.username}.")
             return redirect(url_for('dashboard'))
 
     flash("All employees currently have the maximum number of questions.")
     return redirect(url_for('dashboard'))
+
+@app.route('/answer_question', methods=['POST'])
+@login_required
+def answer_question():
+    if current_user.role != 'employee':
+        flash("You must be an employee!")
+        return redirect(url_for('home'))
+
+    recipient_id = request.form['recipient_id']
+    answer = request.form['answer']
+
+    # Find the student based on the recipient_id
+    student = Student.query.filter_by(id=recipient_id).first()
+
+    if student:
+        # You can store the answer in a list or a new field, for example:
+        student_answer = f"Answer for student {recipient_id}: {answer}"
+
+        # For now, you could print it or store it as part of the answer record
+        print(student_answer)  # Or save it somewhere appropriate
+
+        flash('Answer sent successfully.')
+        return redirect(url_for('employee_dashborad'))
+    else:
+        flash('Student not found.')
+        return redirect(url_for('employee_dashborad'))
 
 @app.route('/employee_dashborad', methods=['GET', 'POST'])
 @login_required
