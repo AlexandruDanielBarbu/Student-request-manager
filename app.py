@@ -1,7 +1,8 @@
-from flask import Flask, render_template, url_for, redirect, request, flash
+from flask import Flask, render_template, url_for, redirect, request, flash, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
+from flask_weasyprint import HTML, render_pdf
 from wtforms import StringField, PasswordField, SubmitField, SelectField, IntegerField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt
@@ -266,6 +267,31 @@ def grade_student():
         return redirect(url_for('grade_student'))
 
     return render_template('grade_student.html', form=form)
+
+@app.route('/generate_pdf', methods=['GET'])
+@login_required
+def generate_pdf():
+    if current_user.role != 'student':
+        flash("Unauthorized access!")
+        return redirect(url_for('home'))
+
+    # Retrieve student grades
+    student = current_user.student
+    grades_list = json.loads(student.grades) if student.grades else []
+
+    # Render the HTML template for the PDF
+    rendered_html = render_template('grades_pdf.html', grades=grades_list, student=student)
+
+    # Generate the PDF
+    pdf = render_pdf(HTML(string=rendered_html))
+
+    # Return the PDF as a response
+    response = make_response(pdf)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = 'inline; filename=grades.pdf'
+    return response
+
+
 
 if __name__ == '__main__':
     with app.app_context():
