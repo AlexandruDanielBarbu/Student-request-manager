@@ -59,6 +59,24 @@
         .questions-list li:last-child {
             border-bottom: none;
         }
+
+        .requests-list {
+            list-style-type: none;
+            padding-left: 0;
+            margin-top: 30px;
+        }
+
+        .requests-list li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .requests-list li:last-child {
+            border-bottom: none;
+        }
     </style>
 </head>
 <body>
@@ -88,6 +106,19 @@
 
                 <button type="submit" class="btn btn-primary">Send Answer</button>
             </form>
+
+            <h3>Pending Requests</h3>
+            <ul class="requests-list">
+                {% for request in requests %}
+                    <li>
+                        <span>{{ request }}</span>
+                        <form action="{{ url_for('accept_request') }}" method="POST" style="display:inline;">
+                            <input type="hidden" name="student_id" value="{{ request.student_id }}">
+                            <button type="submit" class="btn btn-success btn-sm">Accept Request</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
 
             <h1>Grade student</h1>
             <a href="{{ url_for('grade_student') }}" class="btn btn-secondary">Grade</a>

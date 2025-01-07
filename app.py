@@ -77,13 +77,27 @@ class Employee(db.Model):
     # Store questions as JSON (for flexibility)
     questions = db.Column(db.Text, nullable=True)  # JSON format
 
+    # request_queue = db.Column(db.Text, nullable=True)
+
+    # def set_request_queue(self, requests):
+    #     self.request_queue = json.dumps(requests)
+
     def set_questions(self, question_list):
         # Set the questions for the employee.
         self.questions = json.dumps(question_list)
 
+    # def get_requests(self):
+    #     return json.loads(self.request_queue) if self.request_queue else []
+
     def get_questions(self):
         # Get the list of questions.
         return json.loads(self.questions) if self.questions else []
+
+    # def add_request_to_queue(self, request_text, student_id):
+    #     request_entry = f"{request_text} - {student_id}"
+    #     request_list = json.loads(self.request_queue) if self.request_queue else []
+    #     request_list.append(request_entry)
+    #     self.set_request_queue(request_list)
 
     def add_question(self, question_text, student_id):
         question_entry = f"{question_text} - {student_id}"
@@ -257,8 +271,32 @@ def employee_dashborad():
 
     # Get the questions (we assume the `questions` are stored in JSON format)
     questions = json.loads(employee.questions) if employee.questions else []
+    # requests = json.loads(employee.request_queue) if employee.request_queue else []
 
     return render_template('employee_dashborad.html', username=username, questions=questions)
+
+# @app.route('/accept_request', methods=['POST'])
+# @login_required
+# def accept_request():
+#     if current_user.role != 'employee':
+#         flash("Unauthorized access!")
+#         return redirect(url_for('home'))
+
+#     student_id = request.form.get('student_id')
+
+#     # Process the accepted request here (e.g., mark it as processed in the DB)
+#     # Example: Remove the request from the employee's queue
+#     employee = Employee.query.filter_by(id=current_user.id).first()
+#     requests = json.loads(employee.request_queue) if employee.request_queue else []
+
+#     # Remove the accepted request (this is just an example of removing it)
+#     requests = [req for req in requests if req != student_id]
+
+#     employee.set_request_queue(requests)  # Update the request queue in DB
+#     db.session.commit()
+
+#     flash(f"Request from student {student_id} has been accepted.")
+#     return redirect(url_for('employee_dashborad'))
 
 @app.route('/admin_dashboard', methods=['GET', 'POST'])
 @login_required
@@ -466,6 +504,14 @@ def generate_request():
         student_name = student_data.name
         student_group = student_data.group
         courses = json.loads(student_data.courses) if student_data.courses else []
+
+        first_employee = Employee.query.first()
+
+        if not first_employee:
+            flash("No employee available!")
+
+        request_text = f"Student {student_name} needs to change the subject {current_subject} with {new_subject}, tought by {new_teacher}!"
+        first_employee.add_request_to_queue(request_text, current_user.id)
 
         print(f"Request to change {current_subject} to {new_subject} with teacher {new_teacher}")
 
