@@ -6,6 +6,7 @@ from flask_weasyprint import HTML, render_pdf
 from wtforms import StringField, PasswordField, SubmitField, SelectField, IntegerField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt
+from sbert_similarity import serve_ai_question, add_question_to_faq_wannabe
 import json
 
 app = Flask(__name__)
@@ -192,6 +193,10 @@ def ask_question():
         flash("Please provide a valid question.")
         return redirect(url_for('dashboard'))
 
+    answer = serve_ai_question(question)
+    if answer != []:
+        return answer
+
     # Find the first employee with fewer than 5 questions
     employees = Employee.query.all()
     for emp in employees:
@@ -216,6 +221,7 @@ def answer_question():
 
     recipient_id = request.form['recipient_id']
     answer = request.form['answer']
+    # add_question_to_faq_wannabe(question, answer)
 
     # Find the student based on the recipient_id
     student = Student.query.filter_by(id=recipient_id).first()
@@ -438,6 +444,36 @@ def generate_pdf():
     response.headers['Content-Disposition'] = 'inline; filename=grades.pdf'
     return response
 
+@app.route('/generate_request', methods=['GET', 'POST'])
+def generate_request():
+    if current_user.role != 'student':
+        flash("Unauthorized access!")
+        return redirect(url_for('home'))
+
+    if request.method == 'POST':
+        current_subject = request.form.get('current_subject')
+        new_subject = request.form.get('new_subject')
+        new_teacher = request.form.get('new_teacher')
+
+        # Validate form data
+        if not current_subject or not new_subject or not new_teacher:
+            flash("All fields are required!", "error")
+            return redirect(url_for('generate_request'))
+
+        # Process the request (e.g., save it to a database, generate a PDF, etc.)
+        # For demonstration purposes, let's just print the values
+        student_data = current_user.student
+        student_name = student_data.name
+        student_group = student_data.group
+        courses = json.loads(student_data.courses) if student_data.courses else []
+
+        print(f"Request to change {current_subject} to {new_subject} with teacher {new_teacher}")
+
+        # Provide feedback to the user
+        flash("Request successfully submitted!", "success")
+        return redirect(url_for('dashboard'))  # Redirect to dashboard or a confirmation page
+
+    return render_template('generate_request.html')
 
 
 if __name__ == '__main__':

@@ -119,5 +119,22 @@ def main():
                 remove_rejected_question(idx_faq, question_list, answer_list)
 
 
+def serve_ai_question(question):
+    faqs, question_list, answer_list = get_faqs("faq.json")
+    best_match_idx, corr = compute_similarity(question, question_list)
+    try:
+        return answer_list[best_match_idx]
+    except TypeError:
+        print(f"{corr:.2f}\nNo match found\nHuman answer: ", end="")
+        return []
+
+def add_question_to_faq_wannabe(question, human_answer):
+    faqs, question_list, answer_list = get_faqs("faq.json")
+    best_match_idx, corr = compute_similarity(question, question_list)
+
+    idx_faq = add_rejected_question(question, human_answer)
+    if idx_faq != -1:
+        remove_rejected_question(idx_faq, question_list, answer_list)
+
 if __name__ == "__main__":
     main()

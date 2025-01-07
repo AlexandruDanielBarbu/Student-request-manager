@@ -4,36 +4,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 30px;
+        }
+        h1 {
+            color: #343a40;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>This is the deashboard</h1>
-    <a href="{{url_for('logout')}}">Press here to log out</a><br>
-    <a href="{{url_for('view_student', student_id=current_user.student.id) }}">Press here to see your infos.</a>
+    <div class="container">
+        <!-- Dashboard Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Dashboard</h1>
+            <a href="{{url_for('logout')}}" class="btn btn-danger">Log Out</a>
+        </div>
 
-    <h1>Ask a Question</h1>
-    <form action="{{ url_for('ask_question') }}" method="POST">
-        <input type="text" name="question" placeholder="Your question..." required>
-        <button type="submit">Submit</button>
-    </form>
+        <!-- View Student Info -->
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">View Your Info</h2>
+                <a href="{{url_for('view_student', student_id=current_user.student.id)}}" class="btn btn-primary">View Info</a>
+            </div>
+        </div>
 
-    <h1>Generate report</h1>
-    <a href="{{ url_for('generate_pdf') }}" class="btn btn-primary">Download Report as PDF</a>
+        <!-- Ask a Question -->
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">Ask a Question</h2>
+                <form action="{{ url_for('ask_question') }}" method="POST" class="d-flex flex-column">
+                    <input type="text" name="question" class="form-control mb-2" placeholder="Your question..." required>
+                    <button type="submit" class="btn btn-success">Submit</button>
+                </form>
+            </div>
+        </div>
 
-    <h1>Generate request</h1>
-    <button>Generate</button>
+        <!-- Generate Report -->
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">Generate Report</h2>
+                <a href="{{ url_for('generate_pdf') }}" class="btn btn-warning">Download Report as PDF</a>
+            </div>
+        </div>
 
-    <h1>Enrole in course</h1>
-    <form method="POST" action="{{ url_for('enroll_course') }}">
-        <label for="course_name">Course Name:</label>
-        <input type="text" name="course_name" id="course_name" required>
+        <!-- Generate Request -->
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">Generate Request</h2>
+                <a href="{{ url_for('generate_request') }}" class="btn btn-info">Generate</a>
+                <!-- <button class="btn btn-info">Generate</button> -->
+            </div>
+        </div>
 
-        <label for="teacher_name">Teacher Name:</label>
-        <input type="text" name="teacher_name" id="teacher_name" required>
+        <!-- Enroll in Course -->
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">Enroll in Course</h2>
+                <form method="POST" action="{{ url_for('enroll_course') }}" class="d-flex flex-column">
+                    <label for="course_name" class="form-label">Course Name:</label>
+                    <input type="text" name="course_name" id="course_name" class="form-control mb-2" required>
 
-        <button type="submit">Enroll</button>
-    </form>
+                    <label for="teacher_name" class="form-label">Teacher Name:</label>
+                    <input type="text" name="teacher_name" id="teacher_name" class="form-control mb-2" required>
 
+                    <button type="submit" class="btn btn-primary">Enroll</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
-
+    <!-- Bootstrap JS (Optional) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

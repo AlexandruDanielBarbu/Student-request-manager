@@ -1,3 +1,14 @@
 {
-    "rejected_faq": []
+    "rejected_faq": [
+        {
+            "question": "HBuna",
+            "answer": "How do i make an account?",
+            "frequency": 1
+        },
+        {
+            "question": "Hi",
+            "answer": "This is not a question",
+            "frequency": 1
+        }
+    ]
 }
