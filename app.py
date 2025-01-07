@@ -7,6 +7,7 @@ from wtforms import StringField, PasswordField, SubmitField, SelectField, Intege
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt
 from sbert_similarity import serve_ai_question, add_question_to_faq_wannabe
+from change_sub_pdf_gen import generate_pdf as gen_student_request
 import json
 
 app = Flask(__name__)
@@ -505,13 +506,17 @@ def generate_request():
         student_group = student_data.group
         courses = json.loads(student_data.courses) if student_data.courses else []
 
+        gen_student_request("Cerere schimbare materie.pdf",
+                     "", student_name, student_data.address, student_group, 1,
+                     courses, current_subject, new_subject, new_teacher)
+
         first_employee = Employee.query.first()
 
         if not first_employee:
             flash("No employee available!")
 
         request_text = f"Student {student_name} needs to change the subject {current_subject} with {new_subject}, tought by {new_teacher}!"
-        first_employee.add_request_to_queue(request_text, current_user.id)
+        # first_employee.add_request_to_queue(request_text, current_user.id)
 
         print(f"Request to change {current_subject} to {new_subject} with teacher {new_teacher}")
 
